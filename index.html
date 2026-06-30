@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XXXTik</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body, html {
+            background: #000;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100vh;
+            border: none;
+            display: block;
+        }
+        
+        .ad-indicator {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: rgba(16, 16, 20, 0.92);
+            color: #22c55e;
+            padding: 7px 14px;
+            border-radius: 50px;
+            font-size: 13px;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(34, 197, 94, 0.95);
+            color: #111;
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 14px;
+            z-index: 20000;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.7);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <iframe 
+        id="main-frame"
+        src="https://xxxtik.com" 
+        title="XXXTik"
+        allowfullscreen
+        loading="eager">
+    </iframe>
+
+    <!-- Ad Blocker Indicator -->
+    <div class="ad-indicator">
+        <span style="animation: pulse 2s infinite;">🛡️</span>
+        <span>AdBlock ON</span>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span id="toast-text"></span>
+    </div>
+
+    <script>
+        const frame = document.getElementById('main-frame');
+        const toast = document.getElementById('toast');
+        
+        // Performance optimized toast
+        function showToast(msg, ms = 1600) {
+            document.getElementById('toast-text').textContent = msg;
+            toast.style.display = 'flex';
+            toast.style.opacity = '1';
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.style.display = 'none', 350);
+            }, ms);
+        }
+        
+        // Lightweight ad blocker
+        function injectAdBlocker() {
+            try {
+                const win = frame.contentWindow;
+                const doc = frame.contentDocument || win.document;
+                
+                const script = doc.createElement('script');
+                script.textContent = `
+                    (function() {
+                        let blocked = 0;
+                        const block = () => {
+                            document.querySelectorAll('iframe, div, ins, .ad, [class*="ad"], [id*="ad"], [style*="fixed"]').forEach(el => {
+                                if (el.offsetHeight > 50 && el.offsetWidth > 100) {
+                                    el.style.display = 'none';
+                                    blocked++;
+                                    if (blocked % 8 === 0) el.remove();
+                                }
+                            });
+                        };
+                        setInterval(block, 800);
+                        block();
+                        console.log('%c🚀 AdBlocker otimizado rodando', 'color:#22c55e');
+                    })();
+                `;
+                doc.head.appendChild(script);
+            } catch(e) {}
+        }
+        
+        // Optimized load
+        frame.onload = () => {
+            injectAdBlocker();
+            showToast("✅ Carregado • Fluido", 1400);
+        };
+        
+        // Keyboard
+        document.addEventListener('keydown', e => {
+            if (e.key.toLowerCase() === 'r') {
+                frame.src = frame.src;
+                showToast("🔄 Recarregando...");
+            }
+            if (e.key === 'f' || e.key === 'F') {
+                if (document.fullscreenElement) document.exitFullscreen();
+                else document.documentElement.requestFullscreen();
+            }
+        });
+        
+        // Performance tips
+        console.log("%c🚀 XXXTik otimizado para máxima fluidez", "color:#ff2d95;font-weight:bold");
+    </script>
+</body>
+</html>
