@@ -3,147 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XXXTik</title>
+    <title>XFree • Ultra</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: #0a0a0a; overflow: hidden; height: 100vh; }
+        .iframe-container { width: 100vw; height: 100vh; border: none; transition: filter 0.3s ease; }
         
-        body, html {
-            background: #000;
-            height: 100vh;
-            overflow: hidden;
-            touch-action: manipulation;
+        /* Barra de atalhos movida para baixo */
+        .shortcut-bar {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 12px; z-index: 300;
         }
-        
-        iframe {
-            width: 100%;
-            height: 100vh;
-            border: none;
-            display: block;
+        .shortcut { 
+            background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.4); 
+            color: #ec4899; padding: 10px 20px; border-radius: 9999px; font-size: 13px; 
+            font-weight: 500; cursor: pointer; transition: all 0.3s ease; 
+            backdrop-filter: blur(12px); white-space: nowrap;
         }
-        
-        .ad-indicator {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            background: rgba(16, 16, 20, 0.92);
-            color: #22c55e;
-            padding: 7px 14px;
-            border-radius: 50px;
-            font-size: 13px;
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(34, 197, 94, 0.25);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-            user-select: none;
-            pointer-events: none;
+        .shortcut:hover { background: rgba(236, 72, 153, 0.3); transform: scale(1.05); }
+
+        .floating-window { 
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1);
+            width: 92%; max-width: 1150px; height: 88vh; background: #111113; 
+            border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); 
+            box-shadow: 0 30px 70px -15px rgba(0,0,0,0.95); overflow: hidden; z-index: 1000;
+            opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(34, 197, 94, 0.95);
-            color: #111;
-            padding: 10px 22px;
-            border-radius: 50px;
-            font-size: 14px;
-            z-index: 20000;
-            display: none;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.7);
-            transition: all 0.3s ease;
-        }
+        .floating-window.active { opacity: 1; pointer-events: auto; }
+
+        .window-header { background: #1a1a1c; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .resize-btn { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; background: rgba(255,255,255,0.1); color: #ddd; cursor: pointer; }
+        .close-btn { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 21px; cursor: pointer; }
+        .resize-btn:hover { background: #ec4899; color: white; }
+        .close-btn:hover { background: #ef4444; color: white; }
     </style>
 </head>
 <body>
-    <iframe 
-        id="main-frame"
-        src="https://xxxtik.com" 
-        title="XXXTik"
-        allowfullscreen
-        loading="eager">
-    </iframe>
 
-    <!-- Ad Blocker Indicator -->
-    <div class="ad-indicator">
-        <span style="animation: pulse 2s infinite;">🛡️</span>
-        <span>AdBlock ON</span>
+    <!-- Atalhos agrupados na barra inferior -->
+    <div class="shortcut-bar">
+        <div onclick="openWin('sexy')" class="shortcut">✨ SexyDixy</div>
+        <div onclick="openWin('redd')" class="shortcut">📺 ReddClips</div>
     </div>
 
-    <!-- Toast -->
-    <div class="toast" id="toast">
-        <span id="toast-text"></span>
+    <iframe id="mainFrame" src="https://www.xfree.com" class="iframe-container" allowfullscreen></iframe>
+
+    <div id="sexyWin" class="floating-window">
+        <div class="window-header">
+            <div><strong>SexyDixy</strong></div>
+            <div style="display:flex;gap:8px">
+                <div onclick="resizeWin('sexy',-0.1)" class="resize-btn">−</div>
+                <div onclick="resetWin('sexy')" class="resize-btn" style="font-size:14px">↺</div>
+                <div onclick="resizeWin('sexy',0.1)" class="resize-btn">+</div>
+                <div onclick="closeWin('sexy')" class="close-btn">✕</div>
+            </div>
+        </div>
+        <iframe src="https://sexydixy.com" style="width:100%;height:calc(100% - 56px);border:none"></iframe>
+    </div>
+
+    <div id="reddWin" class="floating-window">
+        <div class="window-header">
+            <div><strong>ReddClips</strong></div>
+            <div style="display:flex;gap:8px">
+                <div onclick="resizeWin('redd',-0.1)" class="resize-btn">−</div>
+                <div onclick="resetWin('redd')" class="resize-btn" style="font-size:14px">↺</div>
+                <div onclick="resizeWin('redd',0.1)" class="resize-btn">+</div>
+                <div onclick="closeWin('redd')" class="close-btn">✕</div>
+            </div>
+        </div>
+        <iframe src="https://reddclips.com" style="width:100%;height:calc(100% - 56px);border:none"></iframe>
     </div>
 
     <script>
-        const frame = document.getElementById('main-frame');
-        const toast = document.getElementById('toast');
+        const main = document.getElementById('mainFrame');
         
-        // Performance optimized toast
-        function showToast(msg, ms = 1600) {
-            document.getElementById('toast-text').textContent = msg;
-            toast.style.display = 'flex';
-            toast.style.opacity = '1';
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.style.display = 'none', 350);
-            }, ms);
+        function resizeWin(type, delta) {
+            const w = document.getElementById(type + 'Win');
+            let scale = parseFloat(localStorage.getItem(type + 'Scale')) || 1;
+            scale = Math.max(0.65, Math.min(1.55, scale + delta));
+            localStorage.setItem(type + 'Scale', scale);
+            w.style.transform = `translate(-50%, -50%) scale(${scale})`;
         }
-        
-        // Lightweight ad blocker
-        function injectAdBlocker() {
-            try {
-                const win = frame.contentWindow;
-                const doc = frame.contentDocument || win.document;
-                
-                const script = doc.createElement('script');
-                script.textContent = `
-                    (function() {
-                        let blocked = 0;
-                        const block = () => {
-                            document.querySelectorAll('iframe, div, ins, .ad, [class*="ad"], [id*="ad"], [style*="fixed"]').forEach(el => {
-                                if (el.offsetHeight > 50 && el.offsetWidth > 100) {
-                                    el.style.display = 'none';
-                                    blocked++;
-                                    if (blocked % 8 === 0) el.remove();
-                                }
-                            });
-                        };
-                        setInterval(block, 800);
-                        block();
-                        console.log('%c🚀 AdBlocker otimizado rodando', 'color:#22c55e');
-                    })();
-                `;
-                doc.head.appendChild(script);
-            } catch(e) {}
+
+        function resetWin(type) {
+            localStorage.setItem(type + 'Scale', 1);
+            document.getElementById(type + 'Win').style.transform = `translate(-50%, -50%) scale(1)`;
         }
-        
-        // Optimized load
-        frame.onload = () => {
-            injectAdBlocker();
-            showToast("✅ Carregado • Fluido", 1400);
+
+        function openWin(type) {
+            document.getElementById(type + 'Win').classList.add('active');
+            main.style.filter = "blur(5px) brightness(0.65)";
+        }
+
+        function closeWin(type) {
+            document.getElementById(type + 'Win').classList.remove('active');
+            main.style.filter = "none";
+        }
+
+        window.onload = () => {
+            ['sexy','redd'].forEach(type => {
+                const scale = parseFloat(localStorage.getItem(type + 'Scale')) || 1;
+                document.getElementById(type + 'Win').style.transform = `translate(-50%, -50%) scale(${scale})`;
+            });
         };
-        
-        // Keyboard
-        document.addEventListener('keydown', e => {
-            if (e.key.toLowerCase() === 'r') {
-                frame.src = frame.src;
-                showToast("🔄 Recarregando...");
-            }
-            if (e.key === 'f' || e.key === 'F') {
-                if (document.fullscreenElement) document.exitFullscreen();
-                else document.documentElement.requestFullscreen();
-            }
-        });
-        
-        // Performance tips
-        console.log("%c🚀 XXXTik otimizado para máxima fluidez", "color:#ff2d95;font-weight:bold");
     </script>
 </body>
 </html>
